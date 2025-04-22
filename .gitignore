@@ -1,0 +1,23 @@
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# SQLite databases
+*.db
+*.sqlite
+instance/
+
+# Environment variables
+.env
+.env/*
+
+# Secret keys and sensitive files
+secrect_key.py
+
+# IDE and editor files
+.vscode/
+.idea/
+
+# Test files (if not needed in production)
+test.html

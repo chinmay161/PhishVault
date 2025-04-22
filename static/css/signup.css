@@ -1,0 +1,192 @@
+.auth-container {
+    max-width: 500px;
+    margin: 8rem auto 4rem;
+    padding: 0 2rem;
+}
+
+/* Complete Autofill Override */
+.auth-form input:-webkit-autofill,
+.auth-form input:-webkit-autofill:hover,
+.auth-form input:-webkit-autofill:focus,
+.auth-form input:-internal-autofill-selected {
+  -webkit-text-fill-color: var(--text-color) !important;
+  -webkit-box-shadow: 0 0 0px 1000px var(--background-color) inset !important;
+  box-shadow: 0 0 0px 1000px var(--background-color) inset !important; /* Standard property */
+  background-color: transparent !important; /* Key change */
+  background-clip: content-box !important;
+  border: 2px solid color-mix(in srgb, var(--text-color) 20%, transparent) !important; /* Match your input border */
+}
+
+.auth-card {
+    background: color-mix(in srgb, var(--background-color) 97%, transparent);
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    border: 1px solid color-mix(in srgb, var(--text-color) 10%, transparent);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+}
+
+.auth-title {
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    color: var(--primary-color);
+    text-align: center;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: 0.5rem;
+}
+
+.input-group label {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.auth-form input {
+    padding: 1rem;
+    border: 2px solid color-mix(in srgb, var(--text-color) 20%, transparent);
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, var(--background-color) 95%, transparent);
+    color: var(--text-color);
+    font-size: 1rem;
+}
+
+.auth-form input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 30%, transparent);
+}
+
+.auth-button {
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.auth-button:hover {
+    transform: translateY(-2px);
+}
+
+
+.auth-switch {
+    text-align: center;
+    margin-top: 1rem;
+    color: color-mix(in srgb, var(--text-color) 80%, transparent);
+}
+
+.auth-switch a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.forgot-password {
+    align-self: flex-end;
+    font-size: 0.9rem;
+    color: color-mix(in srgb, var(--text-color) 70%, transparent);
+    text-decoration: none;
+}
+
+.password-rules {
+    font-size: 0.8rem;
+    color: color-mix(in srgb, var(--text-color) 70%, transparent);
+}
+
+/* Password Strength*/
+.password-strength {
+    margin-top: 0.5rem;
+}
+
+.strength-meter {
+    height: 4px;
+    width: 0;
+    background: #ef4444;
+    transition: width 0.3s ease, background 0.3s ease;
+    border-radius: 2px;
+}
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 38%; 
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.password-toggle:hover {
+    background: rgba(0,0,0,0.05);
+}
+
+.password-toggle svg {
+    width: 20px;
+    height: 20px;
+    fill: var(--text-color);
+}
+
+.password-toggle .hidden {
+    display: none;
+}
+
+.strength-text {
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    color: color-mix(in srgb, var(--text-color) 70%, transparent);
+}
+
+.strength-text span {
+    font-weight: 600;
+}
+
+/* Password Match Indicator */
+.password-match {
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    min-height: 1rem;
+}
+
+/* Terms Checkbox */
+.terms .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.terms input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--primary-color);
+}
+
+.terms a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    .auth-container {
+        margin: 6rem auto 2rem;
+        padding: 0 1rem;
+    }
+    
+    .auth-card {
+        padding: 1.5rem;
+    }
+}

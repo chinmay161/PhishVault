@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features.css') }}">
+{% endblock %}
+
+{% block content %}
+<body>
+    <h1>PhishVault Features</h1>
+
+  <div class="section">
+    <h2>Risk Score</h2>
+    <div class="score-box">
+      The Risk Score ranges from <strong>0 to 100</strong>, summarizing how dangerous a URL is:
+      <ul>
+        <li><span class="risk-level green">0–30: Likely Safe</span></li>
+        <li><span class="risk-level yellow">31–70: Suspicious</span></li>
+        <li><span class="risk-level red">71–100: High Risk / Confirmed Phishing</span></li>
+      </ul>
+      Calculated from the combination of threat database checks, detection indicators, and technical signals.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Detection Indicators</h2>
+    <p>These are patterns in the URL or domain that are commonly associated with phishing attempts:</p>
+    <table>
+      <tr><th>Indicator</th><th>Explanation</th></tr>
+      <tr><td>IP Address in URL</td><td>Instead of a domain, raw IPs are used, often malicious.</td></tr>
+      <tr><td>URL Encoding</td><td>Encoded characters (%2F, %3D) used to obfuscate the destination.</td></tr>
+      <tr><td>Too Many Subdomains</td><td>Tries to mimic legit domains (e.g. secure-login.paypal.com.fake.com).</td></tr>
+      <tr><td>Mismatch Domain</td><td>Brand name in domain doesn't match actual host.</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Threat Database Checks</h2>
+    <p>These checks compare the URL against well-known phishing and malware databases:</p>
+    <table>
+      <tr><th>Database</th><th>Description</th></tr>
+      <tr><td>Google Safe Browsing</td><td>Google's blacklist of known phishing and malware sites.</td></tr>
+      <tr><td>PhishTank</td><td>Community-sourced and verified phishing URLs.</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Technical Analysis</h2>
+    <p>Inspects the web page content to detect suspicious behavior or scripts:</p>
+    <table>
+      <tr><th>Feature</th><th>Risk Explanation</th></tr>
+      <tr><td>iFrames</td><td>Can be used to silently load phishing content from other domains.</td></tr>
+      <tr><td>Obfuscated JavaScript</td><td>Common in phishing pages to hide malicious actions.</td></tr>
+      <tr><td>External Form Action</td><td>Forms submitting credentials to unknown domains.</td></tr>
+      <tr><td>Fake SSL Icons</td><td>Misleads users into thinking the page is secure.</td></tr>
+    </table>
+  </div>
+</body>
+    {% block page_js %}
+        <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+    {% endblock %}
+    
+{% endblock %}

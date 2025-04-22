@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<main class="dashboard-container">
+    <section class="welcome-banner">
+        <h2>Welcome back, {{ current_user.name }} 👋</h2>
+        <p>Here's an overview of your phishing activity and tips to stay secure.</p>
+    </section>
+
+    <section class="history-section">
+        <h3>🔎 Your Scan History</h3>
+        <div class="history-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>URL</th>
+                        <th>Status</th>
+                        <th>Risk Level</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in scan_history %}
+                    <tr>
+                        <td>{{ entry.url }}</td>
+                        <td>{{ entry.status }}</td>
+                        <td>{{ entry.risk_level }}</td>
+                        <td>{{ entry.date }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4">No scans yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="graph-section">
+        <h3>📈 Threats Detected Over Time</h3>
+        <canvas id="threatGraph"></canvas>
+    </section>
+
+    <section class="tips-section">
+        <h3>🛡️ Security Tips</h3>
+        <div class="tips-grid">
+            <div class="tip-card">✅ Always verify the domain name before logging in</div>
+            <div class="tip-card">⚠️ Avoid clicking on unknown email links</div>
+            <div class="tip-card">🔒 Look for HTTPS before entering credentials</div>
+        </div>
+    </section>
+</main>
+
+{% block page_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const canvas = document.getElementById('threatGraph');
+const labels = JSON.parse(canvas.dataset.labels);
+const values = JSON.parse(canvas.dataset.values);
+
+const ctx = canvas.getContext('2d');
+const threatChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Threats Detected',
+            data: values,
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 2
+        }]
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}

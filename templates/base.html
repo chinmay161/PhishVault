@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishVault - Smart Phishing Detection</title>
+    <!-- Common CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <!-- Page-Specific CSS -->
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="nav-container">
+            <!-- Logo always visible -->
+            <a href="/" class="brand">PhishVault</a>
+    
+            <!-- Desktop Navigation -->
+            <nav class="desktop-nav">
+                <!-- Center-aligned main links -->
+                <div class="nav-links">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/features" class="nav-link">Features</a>
+                    <a href="/blog" class="nav-link">Blog</a>
+                    {% if current_user.is_authenticated %}
+                        <a href="/dashboard" class="nav-link">Dashboard</a>
+                    {% endif %}
+                </div>
+    
+                <!-- Right-aligned controls -->
+                <div class="nav-controls">
+                    <div class="theme-container">
+                        <button class="theme-toggle" id="themeToggle">
+                            <span class="dark-icon">🌙</span>
+                            <span class="light-icon" style="display: none;">☀️</span>
+                        </button>
+                    </div>
+                    
+                    {% if current_user.is_authenticated %}
+                        <!-- Logged-in user menu -->
+                        <div class="user-menu">
+                            <a href="/settings" class="nav-link">Settings</a>
+                            <a href="/logout" class="auth-btn">Logout</a>
+                        </div>
+                    {% elif request.endpoint not in ['auth.login', 'auth.signup'] %}
+                        <!-- Guest menu (hidden on auth pages) -->
+                        <div class="auth-buttons">
+                            <a href="/auth/login" class="auth-btn">Login</a>
+                            <a href="/auth/signup" class="auth-btn signup-btn">Sign Up</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </nav>
+    
+            <!-- Mobile Menu Button - Always visible -->
+            <button class="mobile-menu-btn">☰</button>
+    
+            <!-- Mobile Navigation Panel -->
+            <div class="mobile-nav">
+                <div class="mobile-nav-header">
+                    <h3>Menu</h3>
+                    <button class="mobile-close-btn">✕</button>
+                </div>
+    
+                <nav class="mobile-nav-links">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/features" class="nav-link">Features</a>
+                    <a href="/blog" class="nav-link">Blog</a>
+                    
+                    {% if current_user.is_authenticated %}
+                        <a href="/dashboard" class="nav-link">Dashboard</a>
+                        <a href="/settings" class="nav-link">Settings</a>
+                        <form action="{{ url_for('logout') }}">
+                            <button type="submit" class="auth-btn">
+                                Logout
+                            </button>
+                        </form>
+                        
+                    {% else %}
+                        {% if request.endpoint not in ['auth.login', 'auth.signup'] %}
+                            <a href="/auth/login" class="nav-link">Login</a>
+                            <a href="/auth/signup" class="nav-link signup-link">Sign Up</a>
+                        {% endif %}
+                    {% endif %}
+    
+                    <div class="mobile-theme-toggle">
+                        <button class="theme-toggle" id="mobileThemeToggle">
+                            <span class="dark-icon">🌙 Dark Mode</span>
+                            <span class="light-icon" style="display: none;">☀️ Light Mode</span>
+                        </button>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+        <div class="footer-content">
+            <!-- Contact Section -->
+            <div class="footer-section">
+                <h4 class="footer-heading">Contact & Support</h4>
+                <div class="contact-info">
+                    <div class="contact-item">
+                         <a href="mailto:support@phishvault.com" class="footer-link">✉️ support@phishvault.com</a>
+                    </div>
+                    <button class="live-chat-button" id="liveChat">
+                        💬 Start Live Chat
+                    </button>
+                    <div class="social-links">
+                        <a href="#" class="social-link">🐦 Twitter</a>
+                        <a href="#" class="social-link">💼 LinkedIn</a>
+                        <a href="#" class="social-link">📘 Facebook</a>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Quick Links -->
+            <div class="footer-section">
+                <h4 class="footer-heading">Quick Links</h4>
+                <nav class="footer-nav">
+                    <a href="/privacy" class="footer-link">🔒 Privacy Policy</a>
+                    <a href="/terms" class="footer-link">📄 Terms of Service</a>
+                    <a href="/faq" class="footer-link">❓ FAQ & Help Center</a>
+                </nav>
+            </div>
+    
+            <!-- Newsletter -->
+            <div class="footer-section">
+                <h4 class="footer-heading">Security Updates</h4>
+                <form class="newsletter-form" id="newsletterForm">
+                    <input type="email" 
+                           class="newsletter-input"
+                           placeholder="Enter your email for alerts"
+                           required>
+                    <button type="submit" class="newsletter-button">
+                        Subscribe 🔔
+                    </button>
+                </form>
+                <p class="newsletter-disclaimer">
+                    Get notified about new phishing patterns and platform updates
+                </p>
+            </div>
+        </div>
+    
+        <!-- Copyright & Legal -->
+        <div class="footer-legal">
+            <div class="legal-links">
+                <span>© <span id="currentYear"></span> PhishVault. All rights reserved.</span>
+                <a href="/disclaimer" class="legal-link">Disclaimer</a>
+                <a href="/attribution" class="legal-link">Data Sources</a>
+            </div>
+            <div class="partner-logos">
+                <img src="https://phishtank.org/images/logo_with_tagline.gif" alt="PhishTank Partner" class="partner-logo">
+                <img src="https://imagedelivery.net/KxWh-mxPGDbsqJB3c5_fmA/58f1b522-250f-4ecd-1086-aa2f972be700/public" alt="Google Safe Browsing" class="partner-logo">
+            </div>
+        </div>
+    </footer>
+    <!-- Common JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+    <!-- Page-Specific JavaScript -->
+    {% block scripts %}{% endblock %}
+    </body>
+    </html>

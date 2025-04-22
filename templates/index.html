@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+{% block content %}
+    <!-- Body Section -->
+<main class="container">
+    <!-- Scan Input Section -->
+    <section class="scan-section">
+        <h2 class="section-title">Scan URL</h2>
+        <div class="scan-input-container">
+            <div class="url-input-group">
+                <input type="url" id="scanInput" class="scan-input" 
+                       placeholder="Enter suspicious URL here..." required>
+                <button class="scan-button" id="scanButton">
+                    <span class="button-text">Scan Now</span>
+                    🔍
+                </button>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- Risk Assessment Section -->
+    <section class="risk-assessment hidden" id="riskAssessment">
+        <h2 class="section-title">Security Analysis</h2>
+        <div class="risk-meter">
+            <div class="risk-level" id="riskLevel">
+                <div class="risk-circle">
+                    <span class="risk-score">85%</span>
+                </div>
+                <div class="risk-description">
+                    <h3 class="risk-title">High Risk Detected</h3>
+                    <p class="risk-text">This URL shows multiple phishing indicators</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Indicators Section -->
+    <section class="indicators-section hidden" id="keyIndicators">
+        <h2 class="section-title">Detection Indicators</h2>
+        <div class="indicator-grid">
+            <div class="indicator-card ssl">
+                <div class="indicator-header">
+                    🔒 SSL Certificate
+                    <span class="indicator-status bad">Invalid</span>
+                </div>
+                <p class="indicator-text">Expired 15 days ago</p>
+            </div>
+            
+            <div class="indicator-card domain">
+                <div class="indicator-header">
+                    🌐 Domain Age
+                    <span class="indicator-status warning">3 Days</span>
+                </div>
+                <p class="indicator-text">Newly registered domain</p>
+            </div>
+
+            <div class="indicator-card keywords">
+                <div class="indicator-header">
+                    🔍 Suspicious Patterns
+                    <span class="indicator-status bad">Detected</span>
+                </div>
+                <p class="indicator-text">"urgent-action", "verify-account" found</p>
+            </div>
+
+            <div class="indicator-card redirect">
+                <div class="indicator-header">
+                    ↪ Redirect Chain
+                    <span class="indicator-status good">Clean</span>
+                </div>
+                <p class="indicator-text">No suspicious redirects found</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Database Comparisons -->
+    <section class="database-section hidden" id="databaseComparison">
+        <h2 class="section-title">Threat Database Checks</h2>
+        <div class="database-grid">
+            <div class="database-item">
+                <img src="/static/images/phishtank-logo.svg" alt="PhishTank" class="db-logo">
+                <div class="db-status reported"></div>
+                <div class="db-update"></div>
+            </div>
+            <div class="database-item">
+                <img src="/static/images/google-safe.svg" alt="Google Safe Browsing" class="db-logo">
+                <div class="db-status clean"></div>
+                <div class="db-update"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Report -->
+    <section class="tech-section hidden" id="technicalReport">
+        <h2 class="section-title">Technical Analysis</h2>
+        <div class="tech-details">
+            <div class="tech-item">
+                <label>IP Address:</label>
+                <span class="tech-value ip-address">Unknown</span>
+            </div>
+            <div class="tech-item">
+                <label>ISP:</label>
+                <span class="tech-value isp">Unknown</span>
+            </div>
+            <div class="tech-item">
+                <label>Usage Type:</label>
+                <span class="tech-value usage-type">Unknown</span>
+            </div>
+            <div class="tech-item">
+                <label>ASN:</label>
+                <span class="tech-value asn">Unknown</span>
+            </div>
+            <div class="tech-item">
+                <label>Domain Name:</label>
+                <span class="tech-value domain-name">Unknown</span>
+            </div>
+            <div class="tech-item">
+                <label>Country:</label>
+                <span class="tech-value country">Unknown</span>
+            </div>
+            <div class="tech-item">
+                <label>City:</label>
+                <span class="tech-value city">Unknown</span>
+            </div>
+            <div class="tech-item">
+                <label>Abuse Confidence Score:</label>
+                <span class="tech-value abuse-confidence-score">0%</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Reports -->
+    <section class="community-section hidden" id="communityReports">
+        <h2 class="section-title">User Reports</h2>
+        <div class="comment-section">
+            <div class="user-comment">
+                <div class="comment-header">
+                    <span class="user-name">SafetyGuardian123</span>
+                    <span class="comment-date">2023-11-20</span>
+                </div>
+                <p class="comment-text">This site tried to steal my banking credentials!</p>
+                <div class="comment-actions">
+                    <button class="vote-button">🔼 12</button>
+                    <button class="vote-button">🔽 2</button>
+                </div>
+            </div>
+        </div>
+        <form class="comment-form">
+            <textarea placeholder="Add your report..." class="comment-input"></textarea>
+            <button type="submit" class="submit-button">Submit Report</button>
+        </form>
+    </section>
+</main>
+    {% block page_js %}
+    <script type="module" src="{{ url_for('static', filename='js/home.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    {% endblock %}
+{% endblock %}

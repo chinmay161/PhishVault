@@ -1,0 +1,51 @@
+body { 
+    font-family: Arial, sans-serif; 
+    line-height: 1.6; 
+    padding: 60px;
+    background: var(--background-color); 
+     color: var(--text-color);
+}
+
+h1, h2 { 
+    color: var(--primary-color); 
+}
+
+.section { 
+    margin-bottom: 40px; 
+}
+    
+.score-box { 
+    padding: 10px 15px; 
+    border-left: 5px solid var(--primary-color); 
+    margin-bottom: 10px; 
+}
+    
+table { 
+    width: 100%; 
+    border-collapse: 
+    collapse; 
+    margin-top: 10px; 
+    justify-content: center;
+}
+    
+th, td { 
+    border: 1px solid #ccc; 
+    padding: 10px; 
+    text-align: left; 
+}
+    
+.risk-level { 
+    font-weight: bold; 
+}
+    
+.green { 
+    color: green; 
+}
+    
+.yellow { 
+    color: goldenrod; 
+}
+    
+.red { 
+    color: red; 
+}
