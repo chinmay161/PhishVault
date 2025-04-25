@@ -36,7 +36,7 @@ PhishVault/
 ├── models.py               # SQLAlchemy models
 ├── auth_routes.py          # Auth logic (login, signup, forgot password)
 ├── phishing_routes.py      # URL scanning routes and logic
-├── dashboard_routes.py     # Dashboard logic (optional/coming soon)
+├── dashboard_routes.py     # Dashboard logic
 ├── app.py                  # App setup and blueprint registration
 ├── .env                    # Environment variables (not committed)
 └── phishtank_data.json     # Manually downloaded threat data
