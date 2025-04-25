@@ -21,3 +21,4 @@ secrect_key.py
 
 # Test files (if not needed in production)
 test.html
+migrations/

@@ -4,76 +4,52 @@
 {% endblock %}
 
 {% block content %}
-<main class="dashboard-container">
-    <section class="welcome-banner">
-        <h2>Welcome back, {{ current_user.name }} 👋</h2>
-        <p>Here's an overview of your phishing activity and tips to stay secure.</p>
-    </section>
+<div class="container">
+    <!-- Scan Statistics -->
+    <div class="card">
+      <div class="section-title">Scan Statistics</div>
+      <div class="stats-grid">
+        <div class="stat-box">Total Scans<br><strong id="total-scans">0</strong></div>
+        <div class="stat-box">Safe URLs<br><strong id="safe-count">0</strong></div>
+        <div class="stat-box">Malicious URLs<br><strong id="phishing-count">0</strong></div>
+      </div>
+    </div>
 
-    <section class="history-section">
-        <h3>🔎 Your Scan History</h3>
-        <div class="history-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>URL</th>
-                        <th>Status</th>
-                        <th>Risk Level</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for entry in scan_history %}
-                    <tr>
-                        <td>{{ entry.url }}</td>
-                        <td>{{ entry.status }}</td>
-                        <td>{{ entry.risk_level }}</td>
-                        <td>{{ entry.date }}</td>
-                    </tr>
-                    {% else %}
-                    <tr><td colspan="4">No scans yet.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <!-- Graph -->
+    <div class="card">
+      <div class="section-title">Risk Trends</div>
+        <div class="chart-container">
+          <canvas id="riskChart"></canvas>
         </div>
-    </section>
+    </div>
 
-    <section class="graph-section">
-        <h3>📈 Threats Detected Over Time</h3>
-        <canvas id="threatGraph"></canvas>
-    </section>
+    <!-- Recent Scans -->
+    <div class="card">
+      <div class="section-title">Recent Scans</div>
+      <div class="scan-list" id="recent-scans-container">
+          <!-- Filed Dynamically -->
+      </div>
+      <div class="pagination" id="pagination-container">
+          <!-- Filed Dynamically -->
+      </div>
+      <button class="download-btn">Download Full Report</button>
+    </div>
 
-    <section class="tips-section">
-        <h3>🛡️ Security Tips</h3>
-        <div class="tips-grid">
-            <div class="tip-card">✅ Always verify the domain name before logging in</div>
-            <div class="tip-card">⚠️ Avoid clicking on unknown email links</div>
-            <div class="tip-card">🔒 Look for HTTPS before entering credentials</div>
-        </div>
-    </section>
-</main>
+    <!-- Tips -->
+    <div class="card">
+      <div class="section-title">Security Tips</div>
+      <ul class="tips-list">
+        <li>Always verify the URL before entering credentials.</li>
+        <li>Enable two-factor authentication wherever possible.</li>
+        <li>Keep your browser and antivirus updated.</li>
+        <li>Be cautious with email links and attachments.</li>
+      </ul>
+    </div>
+  </div>
 
-{% block page_js %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-const canvas = document.getElementById('threatGraph');
-const labels = JSON.parse(canvas.dataset.labels);
-const values = JSON.parse(canvas.dataset.values);
-
-const ctx = canvas.getContext('2d');
-const threatChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: labels,
-        datasets: [{
-            label: 'Threats Detected',
-            data: values,
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderColor: 'rgba(255, 99, 132, 1)',
-            borderWidth: 2
-        }]
-    }
-});
-</script>
-{% endblock %}
+        {% block page_js %}
+            <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+        {% endblock %}
 {% endblock %}

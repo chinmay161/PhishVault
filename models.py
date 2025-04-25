@@ -72,3 +72,15 @@ class PasswordResetToken(db.Model):
         db.session.commit()
         return token
     
+class ScanResult(db.Model):
+    __tablename__ = 'scan_results'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    url = db.Column(db.String(2048), nullable=False)
+    status = db.Column(db.String(20))  # Safe / Reported / Suspicious
+    risk_score = db.Column(db.Integer)
+    result_json = db.Column(db.Text) 
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref=db.backref('scan_results', lazy=True))

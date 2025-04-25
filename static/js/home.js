@@ -103,6 +103,16 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('.tech-value.city').textContent = techDetails.city || 'Unknown';
             document.querySelector('.tech-value.abuse-confidence-score').textContent =
                 `${techDetails.abuse_confidence_score}%`;
+
+            // Inside the scanButton click handler:
+            fetch("/scan-url", { method: "POST", /* ... */ })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.error) {
+                        window.refreshDashboard(); // Force refresh
+                    }
+                });
+
         } catch (error) {
             console.error('Error during scan:', error.message);
             alert('An unexpected error occurred. Please try again.');

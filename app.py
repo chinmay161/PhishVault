@@ -4,8 +4,10 @@ from flask_mail import Mail
 from models import db, User
 from auth_routes import auth_bp
 from phishing_routes import phishing_bp
+from dashboard_routes import dashboard_bp
 from dotenv import load_dotenv
 import os
+from flask_migrate import Migrate
 
 load_dotenv()
 app = Flask(__name__)
@@ -37,10 +39,13 @@ app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
 # Register blueprints
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(phishing_bp, url_prefix='/')
+app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
 
 # Create database tables
 with app.app_context():
     db.create_all()
+
+migrate = Migrate(app, db)
 
 @app.route('/')
 def home():
@@ -60,7 +65,7 @@ def contact():
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(user_id)  # Retrieves user from the database
+    return db.session.get(User, user_id)  # Retrieves user from the database
 
 @app.route('/dashboard')
 @login_required

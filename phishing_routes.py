@@ -7,6 +7,9 @@ import whois
 from datetime import datetime
 import dns.resolver
 from dotenv import load_dotenv
+from models import db, ScanResult
+from flask_login import current_user
+import traceback
 
 # Define the blueprint
 phishing_bp = Blueprint('phishing', __name__)
@@ -236,8 +239,23 @@ def scan_url():
 
         results['risk_score'] = min(risk_score, 100)
 
-        return jsonify(results), 200
+        # Save to database
+        scan_record = ScanResult(
+            user_id=current_user.id,
+            url=normalized_url,
+            result_json=json.dumps(results),
+            risk_score=results['risk_score'],
+            status = "Safe" if results['risk_score'] < 40 else "malicious"
+        )
+        db.session.add(scan_record)
+        db.session.commit()
+
+        return jsonify({
+            **results,
+            "refresh_dashboard": True  # Flag for frontend
+        }), 200
 
     except Exception as e:
         print(f"Error: {str(e)}")
+        traceback.print_exc()  # Log full traceback
         return jsonify({'error': 'An unexpected error occurred'}), 500
