@@ -15,7 +15,7 @@ import traceback
 phishing_bp = Blueprint('phishing', __name__)
 
 # Mock database for community reports
-community_reports_db = []
+#community_reports_db = []
 
 # Helper function: Validate and normalize URL
 def validate_and_normalize_url(raw_url):
@@ -219,7 +219,7 @@ def scan_url():
             'threat_databases': check_threat_databases(normalized_url),
             'ip_reputation': check_ip_reputation(parsed_url),
             'technical_details': check_technical_details(parsed_url),
-            'community_reports': community_reports_db
+            #'community_reports': community_reports_db
         }
 
         # Calculate Risk Score
@@ -240,15 +240,17 @@ def scan_url():
         results['risk_score'] = min(risk_score, 100)
 
         # Save to database
-        scan_record = ScanResult(
+        if current_user.is_authenticated:
+            scan_record = ScanResult(
             user_id=current_user.id,
             url=normalized_url,
             result_json=json.dumps(results),
             risk_score=results['risk_score'],
-            status = "Safe" if results['risk_score'] < 40 else "malicious"
-        )
-        db.session.add(scan_record)
-        db.session.commit()
+            status="Safe" if results['risk_score'] < 40 else "malicious"
+            )
+            db.session.add(scan_record)
+            db.session.commit()
+
 
         return jsonify({
             **results,

@@ -39,7 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('keyIndicators').classList.remove('hidden');
             document.getElementById('databaseComparison').classList.remove('hidden');
             document.getElementById('technicalReport').classList.remove('hidden');
-            document.getElementById('communityReports').classList.remove('hidden');
+            const communityReportsSection = document.getElementById('communityReports');
+            if (communityReportsSection) {
+                communityReportsSection.classList.remove('hidden');
+            }
+
 
             // Update the risk meter with animation
             updateRiskScore(result.risk_score);
@@ -105,13 +109,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 `${techDetails.abuse_confidence_score}%`;
 
             // Inside the scanButton click handler:
-            fetch("/scan-url", { method: "POST", /* ... */ })
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.error) {
-                        window.refreshDashboard(); // Force refresh
-                    }
-                });
+            if (window.refreshDashboard) {
+                window.refreshDashboard(); // No second fetch needed
+            }
+            
 
         } catch (error) {
             console.error('Error during scan:', error.message);

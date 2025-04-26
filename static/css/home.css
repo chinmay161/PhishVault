@@ -234,7 +234,7 @@
 }
 
 .tech-value {
-    color: #333;
+    color: var(--text-color);
 }
 /* Community Section */
 .user-comment {
