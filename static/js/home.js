@@ -49,12 +49,16 @@ document.addEventListener('DOMContentLoaded', () => {
             updateRiskScore(result.risk_score);
 
             // Update risk-related texts
-            document.querySelector('.risk-title').textContent =
-                result.risk_score > 70 ? 'High Risk Detected' : 'Low Risk Detected';
-            document.querySelector('.risk-text').textContent =
-                result.risk_score > 70
-                    ? 'This URL shows multiple phishing indicators'
-                    : 'No significant phishing indicators found';
+            if (result.risk_score >= 70) {
+                document.querySelector('.risk-title').textContent = 'High Risk Detected';
+                document.querySelector('.risk-text').textContent = 'This URL shows multiple phishing indicators';
+            } else if (result.risk_score >= 40) {
+                document.querySelector('.risk-title').textContent = 'Moderate Risk Detected';
+                document.querySelector('.risk-text').textContent = 'This URL shows some phishing indicators';
+            } else {
+                document.querySelector('.risk-title').textContent = 'Low Risk Detected';
+                document.querySelector('.risk-text').textContent = 'No significant phishing indicators found';
+            }
 
             // Update SSL certificate indicator
             document.querySelector('.ssl .indicator-status').textContent =
