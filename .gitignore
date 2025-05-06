@@ -20,5 +20,8 @@ secrect_key.py
 .idea/
 
 # Test files (if not needed in production)
-test.html
 migrations/
+phishtank_data.json
+
+#project Code
+ProjectCode.docx

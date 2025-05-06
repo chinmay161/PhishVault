@@ -88,6 +88,9 @@ def login():
     if not user.is_active:
         return jsonify({'error': 'Please verify your email first'}), 403
 
+    user.last_login = datetime.utcnow()
+    db.session.commit()
+    
     login_user(user)  # Flask-Login handles session management
 
     return jsonify({'message': 'Login successful'}), 200

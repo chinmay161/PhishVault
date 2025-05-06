@@ -17,6 +17,7 @@ class User(db.Model, UserMixin):
     is_active = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_login = db.Column(db.DateTime)
 
     __table_args__ = (
         db.Index('idx_email', 'email'),
@@ -84,3 +85,18 @@ class ScanResult(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship('User', backref=db.backref('scan_results', lazy=True))
+
+class Link(db.Model):
+    __tablename__ = 'links'
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    name = db.Column(db.String(100))
+    url = db.Column(db.String(500))
+    type = db.Column(db.String(20))  # 'social' or 'partner'
+    is_visible = db.Column(db.Boolean, default=True)
+
+class PolicyDocument(db.Model):
+    __tablename__ = 'policy_documents'
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    document_type = db.Column(db.String(50))  # 'tos' or 'privacy'
+    content = db.Column(db.Text)
+    last_updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

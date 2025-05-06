@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-container" style="max-width: 800px; margin: 4rem auto; padding: 2rem;">
+    <h1 class="admin-title">Terms of Service</h1>
+    
+    {% if document %}
+        <div class="policy-content">
+            {{ document.content|safe }}
+        </div>
+    {% else %}
+        <div class="alert">
+            Terms of Service are currently being prepared. Please check back later.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

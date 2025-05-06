@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <h1 class="admin-title">Edit Policy Document</h1>
+    
+    <!-- Document Type Selector -->
+    <div class="doc-type-selector">
+        <a href="{{ url_for('admin.edit_policy', doc_type='tos') }}"
+           class="{% if doc_type == 'tos' %}active{% endif %}">Terms of Service</a>
+        <a href="{{ url_for('admin.edit_policy', doc_type='privacy') }}"
+           class="{% if doc_type == 'privacy' %}active{% endif %}">Privacy Policy</a>
+    </div>
+
+    <form method="POST" class="policy-editor">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="doc_type" value="{{ doc_type }}">
+        
+        <div class="document-meta">
+            <span class="doc-type-badge">{{ doc_type|upper }}</span>
+            {% if document %}
+            <span class="last-saved">Last saved: {{ document.last_updated.strftime('%Y-%m-%d %H:%M') }}</span>
+            {% endif %}
+        </div>
+
+        <textarea id="editor" name="content">{{ document.content if document else '' }}</textarea>
+        <button type="submit" class="btn-primary">Save Changes</button>
+    </form>
+</div>
+
+    {% block page_js %}
+        <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+        <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    {% endblock %}
+{% endblock %}

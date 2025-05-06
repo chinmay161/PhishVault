@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+    {% block styles %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    {% endblock %}
+{% block content %}
+<div class="admin-container">
+    <h1 class="admin-title">User Management</h1>
+    
+    <div class="user-controls">
+        <input type="text" id="searchInput" placeholder="Search users...">
+        <button class="btn-primary" onclick="exportUsers()">
+            <i class="fas fa-download"></i> Export CSV
+        </button>
+    </div>
+
+    <table class="user-table">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Registered</th>
+                <th>Last Login</th>
+                <th>Scans</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.email }}</td>
+                <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                <td>{{ user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login }}</td>
+                <td>{{ user.scan_results|length }}</td>
+                <td>{{ 'Active' if user.is_active else 'Inactive' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+    {% block page_js %}
+        <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    {% endblock %}
+
+{% endblock %}

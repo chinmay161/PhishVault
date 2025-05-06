@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+    {% block styles %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    {% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <h1 class="admin-title">Admin Dashboard</h1>
+    
+    <!-- Quick Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{ total_users }}</div>
+            <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ total_scans }}</div>
+            <div class="stat-label">Total Scans</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ malicious_scans }}</div>
+            <div class="stat-label">Malicious URLs</div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="chart-section">
+        <div class="chart-card">
+            <h3>Scan Activity (Last 30 Days)</h3>
+            <canvas id="scanTrendChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>Scan Status Distribution</h3>
+            <canvas id="scanStatusChart"></canvas>
+        </div>
+    </div>
+
+    {% block page_js %}
+        
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    {% endblock %}
+{% endblock %}

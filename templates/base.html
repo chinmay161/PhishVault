@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>PhishVault - Smart Phishing Detection</title>
     <!-- Common CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
@@ -11,89 +15,105 @@
 </head>
 <body>
     <!-- Header Section -->
-    <header class="header">
-        <div class="nav-container">
-            <!-- Logo always visible -->
-            <a href="/" class="brand">PhishVault</a>
-    
-            <!-- Desktop Navigation -->
-            <nav class="desktop-nav">
-                <!-- Center-aligned main links -->
-                <div class="nav-links">
+    <!-- Header Section -->
+<header class="header">
+    <div class="nav-container">
+        <!-- Logo -->
+        <a href="/" class="brand">PhishVault</a>
+
+        <!-- Desktop Navigation -->
+        <nav class="desktop-nav">
+            <div class="nav-links">
+                {% if current_user.is_authenticated and current_user.role == 'admin' and request.endpoint.startswith('admin.') %}
+                    <!-- Admin Pages Navigation -->
+                    <a href="{{ url_for('admin.admin_dashboard') }}" class="nav-link">Dashboard</a>
+                    <a href="{{ url_for('admin.manage_users') }}" class="nav-link">Users</a>
+                    <a href="{{ url_for('admin.manage_links') }}" class="nav-link">Links</a>
+                    <a href="{{ url_for('admin.edit_policy', doc_type='privacy') }}" class="nav-link">Policies</a>
+                {% else %}
+                    <!-- Regular Navigation -->
                     <a href="/" class="nav-link">Home</a>
                     <a href="/features" class="nav-link">Features</a>
-                    <a href="/blog" class="nav-link">Blog</a>
                     {% if current_user.is_authenticated %}
                         <a href="/dashboard" class="nav-link">Dashboard</a>
                     {% endif %}
+                {% endif %}
+            </div>
+
+            <!-- Right-aligned controls -->
+            <div class="nav-controls">
+                <div class="theme-container">
+                    <button class="theme-toggle" id="themeToggle">
+                        <span class="dark-icon">🌙</span>
+                        <span class="light-icon" style="display: none;">☀️</span>
+                    </button>
                 </div>
-    
-                <!-- Right-aligned controls -->
-                <div class="nav-controls">
-                    <div class="theme-container">
-                        <button class="theme-toggle" id="themeToggle">
-                            <span class="dark-icon">🌙</span>
-                            <span class="light-icon" style="display: none;">☀️</span>
-                        </button>
-                    </div>
-                    
-                    {% if current_user.is_authenticated %}
-                        <!-- Logged-in user menu -->
-                        <div class="user-menu">
-                            <a href="/settings" class="nav-link">Settings</a>
-                            <a href="/logout" class="auth-btn">Logout</a>
-                        </div>
-                    {% elif request.endpoint not in ['auth.login', 'auth.signup'] %}
-                        <!-- Guest menu (hidden on auth pages) -->
-                        <div class="auth-buttons">
-                            <a href="/auth/login" class="auth-btn">Login</a>
-                            <a href="/auth/signup" class="auth-btn signup-btn">Sign Up</a>
-                        </div>
+
+                {% if current_user.is_authenticated %}
+                    <!-- Show Admin button only for admins on non-admin pages -->
+                    {% if current_user.role == 'admin' and not request.endpoint.startswith('admin.') %}
+                        <a href="{{ url_for('admin.admin_dashboard') }}" class="auth-btn">Admin</a>
                     {% endif %}
-                </div>
-            </nav>
-    
-            <!-- Mobile Menu Button - Always visible -->
-            <button class="mobile-menu-btn">☰</button>
-    
-            <!-- Mobile Navigation Panel -->
-            <div class="mobile-nav">
-                <div class="mobile-nav-header">
-                    <h3>Menu</h3>
-                    <button class="mobile-close-btn">✕</button>
-                </div>
-    
-                <nav class="mobile-nav-links">
+                    
+                    <!-- Logout -->
+                    <a href="{{ url_for('logout') }}" class="auth-btn">Logout</a>
+                {% else %}
+                    <!-- Show login/signup only on non-auth pages -->
+                    {% if request.endpoint not in ['auth.login', 'auth.signup'] %}
+                        <a href="{{ url_for('auth.login') }}" class="auth-btn">Login</a>
+                        <a href="{{ url_for('auth.signup') }}" class="auth-btn signup-btn">Sign Up</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </nav>
+
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn">☰</button>
+
+        <!-- Mobile Navigation Panel -->
+        <div class="mobile-nav">
+            <div class="mobile-nav-header">
+                <h3>Menu</h3>
+                <button class="mobile-close-btn">✕</button>
+            </div>
+            <nav class="mobile-nav-links">
+                {% if current_user.is_authenticated and current_user.role == 'admin' and request.endpoint.startswith('admin.') %}
+                    <!-- Admin Mobile Navigation -->
+                    <a href="{{ url_for('admin.admin_dashboard') }}" class="nav-link">Dashboard</a>
+                    <a href="{{ url_for('admin.manage_users') }}" class="nav-link">Users</a>
+                    <a href="{{ url_for('admin.manage_links') }}" class="nav-link">Links</a>
+                    <a href="{{ url_for('admin.edit_policy', doc_type='privacy') }}" class="nav-link">Policies</a>
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+                {% else %}
+                    <!-- Regular Mobile Navigation -->
                     <a href="/" class="nav-link">Home</a>
                     <a href="/features" class="nav-link">Features</a>
-                    <a href="/blog" class="nav-link">Blog</a>
-                    
                     {% if current_user.is_authenticated %}
                         <a href="/dashboard" class="nav-link">Dashboard</a>
-                        <a href="/settings" class="nav-link">Settings</a>
-                        <form action="{{ url_for('logout') }}">
-                            <button type="submit" class="auth-btn">
-                                Logout
-                            </button>
-                        </form>
-                        
-                    {% else %}
-                        {% if request.endpoint not in ['auth.login', 'auth.signup'] %}
-                            <a href="/auth/login" class="nav-link">Login</a>
-                            <a href="/auth/signup" class="nav-link signup-link">Sign Up</a>
+                        {% if current_user.role == 'admin' %}
+                            <a href="{{ url_for('admin.admin_dashboard') }}" class="nav-link">Admin</a>
                         {% endif %}
                     {% endif %}
-    
-                    <div class="mobile-theme-toggle">
-                        <button class="theme-toggle" id="mobileThemeToggle">
-                            <span class="dark-icon">🌙 Dark Mode</span>
-                            <span class="light-icon" style="display: none;">☀️ Light Mode</span>
-                        </button>
-                    </div>
-                </nav>
-            </div>
+                    
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="nav-link">Login</a>
+                        <a href="{{ url_for('auth.signup') }}" class="nav-link signup-link">Sign Up</a>
+                    {% endif %}
+                {% endif %}
+                
+                <div class="mobile-theme-toggle">
+                    <button class="theme-toggle" id="mobileThemeToggle">
+                        <span class="dark-icon">🌙 Dark Mode</span>
+                        <span class="light-icon" style="display: none;">☀️ Light Mode</span>
+                    </button>
+                </div>
+            </nav>
         </div>
-    </header>
+    </div>
+</header>
     
 
     <main>
@@ -112,10 +132,13 @@
                         💬 Start Live Chat
                     </button>
                     <div class="social-links">
-                        <a href="#" class="social-link">🐦 Twitter</a>
-                        <a href="#" class="social-link">💼 LinkedIn</a>
-                        <a href="#" class="social-link">📘 Facebook</a>
-                    </div>
+                        {% for link in links if link.is_visible %}
+                          <a href="{{ link.url }}" class="social-link">
+                            {{ get_link_icon(link.name) | safe }}
+                            {{ link.name }}
+                          </a>
+                        {% endfor %}
+                      </div>
                 </div>
             </div>
     
@@ -123,8 +146,8 @@
             <div class="footer-section">
                 <h4 class="footer-heading">Quick Links</h4>
                 <nav class="footer-nav">
-                    <a href="/privacy" class="footer-link">🔒 Privacy Policy</a>
-                    <a href="/terms" class="footer-link">📄 Terms of Service</a>
+                    <a href="{{ url_for('public_terms') }}" class="footer-link">📄 Terms of Service</a>
+                    <a href="{{ url_for('public_privacy') }}" class="footer-link">🔒 Privacy Policy</a>
                     <a href="/faq" class="footer-link">❓ FAQ & Help Center</a>
                 </nav>
             </div>

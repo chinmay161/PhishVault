@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+    {% block styles %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    {% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <h1 class="admin-title">Manage Links</h1>
+    
+    <div class="link-controls">
+        <button class="btn-primary" id="addLinkButton">
+            <i class="fas fa-plus"></i> Add New Link
+        </button>
+    </div>
+
+    <div class="links-section">
+        <div class="link-type">
+            <h3>Social Media Links</h3>
+            <table class="link-table">
+                <thead>
+                    <tr>
+                        <th>Icon</th>
+                        <th>Name</th>
+                        <th>URL</th>
+                        <th>Visibility</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for link in social_links %}
+                    <tr data-link-id="{{ link.id }}">
+                      <td class="link-icon">
+                        {{ get_link_icon(link.name) | safe }}
+                      </td>
+                      <td>{{ link.name }}</td>
+                      <td><a href="{{ link.url }}" target="_blank">{{ link.url }}</a></td>
+                      <td>
+                        <label class="switch">
+                          <input type="checkbox" {{ 'checked' if link.is_visible }} 
+                                 data-link-id="{{ link.id }}">
+                          <span class="slider"></span>
+                        </label>
+                      </td>
+                      <td>
+                        <button class="icon-btn" onclick="editLink('{{ link.id }}')">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="icon-btn delete-btn" data-link-id="{{ link.id }}">
+                          <svg class="trash-icon" viewBox="0 0 24 24" width="18" height="18">
+                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+            </table>
+        </div>
+
+        <div class="link-type">
+            <h3>Partner Links</h3>
+            <table class="link-table">
+              <thead>
+                <tr>
+                  <th>Icon</th>
+                  <th>Name</th>
+                  <th>URL</th>
+                  <th>Visibility</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for link in partner_links %}
+                <tr data-link-id="{{ link.id }}">
+                  <td class="link-icon">
+                    {{ get_link_icon(link.name) | safe }}
+                  </td>
+                  <td>{{ link.name }}</td>
+                  <td><a href="{{ link.url }}" target="_blank">{{ link.url }}</a></td>
+                  <td>
+                    <label class="switch">
+                      <input type="checkbox" {{ 'checked' if link.is_visible }} 
+                             data-link-id="{{ link.id }}">
+                      <span class="slider"></span>
+                    </label>
+                  </td>
+                  <td>
+                    <button class="icon-btn" onclick="editLink('{{ link.id }}')">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="icon-btn delete-btn" data-link-id="{{ link.id }}">
+                      <svg class="trash-icon" viewBox="0 0 24 24" width="18" height="18">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+    </div>
+</div>
+
+<!-- Add Link Modal -->
+<div id="linkModal" class="modal">
+    <div class="modal-content">
+        <span class="close" >&times;</span>
+        <h3>Add New Link</h3>
+        <form id="linkForm" class="modal-content">
+            {% if csrf_token %}
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% endif %}
+            <input type="text" name="name" placeholder="Link Name" required>
+            <input type="url" name="url" placeholder="https://example.com" required>
+            <select name="type">
+                <option value="social">Social Media</option>
+                <option value="partner">Partner</option>
+            </select>
+            <button type="submit" class="btn-primary">Save Link</button>
+        </form>
+    </div>
+</div>
+
+    {% block page_js %}
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    {% endblock %}
+{% endblock %}
