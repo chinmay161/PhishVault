@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 from models import db, ScanResult
 from flask_login import current_user
 import traceback
+from flask_socketio import emit
+from extensions import socketio
 
 # Define the blueprint
 phishing_bp = Blueprint('phishing', __name__)
@@ -197,67 +199,80 @@ def check_technical_details(parsed_url):
 @phishing_bp.route('/scan-url', methods=['POST'])
 def scan_url():
     try:
-        # Get the raw URL from the request
         data = request.json
         raw_url = data.get('url')
+        sid = request.args.get('sid')  # SocketIO session ID from frontend
 
-        # Validate and normalize the URL
+        def notify(step, detail=""):
+            socketio.emit('scan_progress', {'step': step, 'detail': detail}, room=sid)
+
+        # Validate URL
+        notify("Validating URL")
         normalized_url, error = validate_and_normalize_url(raw_url)
         if error:
+            notify("Validation Failed", error)
             return jsonify({'error': error}), 400
 
-        # Parse the normalized URL
         parsed_url = urlparse(normalized_url)
+        results = {'risk_score': 0}
 
-        # Initialize results dictionary
-        results = {
-            'risk_score': 0,
-            'ssl_certificate': check_ssl_certificate(parsed_url),
-            'domain_age': check_domain_age(parsed_url),
-            'keywords': check_suspicious_keywords(normalized_url),
-            'redirect_chain': check_redirect_chain(normalized_url),
-            'threat_databases': check_threat_databases(normalized_url),
-            'ip_reputation': check_ip_reputation(parsed_url),
-            'technical_details': check_technical_details(parsed_url),
-            #'community_reports': community_reports_db
-        }
+        # Step-by-step scan with WebSocket updates
+        notify("Checking SSL Certificate")
+        results['ssl_certificate'] = check_ssl_certificate(parsed_url)
 
-        # Calculate Risk Score
-        risk_score = 0
+        notify("Checking Domain Age")
+        results['domain_age'] = check_domain_age(parsed_url)
+
+        notify("Checking for Suspicious Keywords")
+        results['keywords'] = check_suspicious_keywords(normalized_url)
+
+        notify("Checking Redirects")
+        results['redirect_chain'] = check_redirect_chain(normalized_url)
+
+        notify("Checking Threat Databases")
+        results['threat_databases'] = check_threat_databases(normalized_url)
+
+        notify("Checking IP Reputation")
+        results['ip_reputation'] = check_ip_reputation(parsed_url)
+
+        notify("Checking DNS Records")
+        results['technical_details'] = check_technical_details(parsed_url)
+
+        # Calculate risk score
+        notify("Calculating Risk Score")
+        score = 0
         if not results['ssl_certificate']['valid']:
-            risk_score += 20
+            score += 20
         if results['domain_age']['age_days'] < 30:
-            risk_score += 20
+            score += 20
         if results['keywords']['detected']:
-            risk_score += 20
+            score += 20
         if not results['redirect_chain']['clean']:
-            risk_score += 20
+            score += 20
         if any(db['status'] == 'Reported' for db in results['threat_databases']):
-            risk_score += 20
+            score += 20
         if results['ip_reputation']['abuse_confidence_score'] > 50:
-            risk_score += 20
+            score += 20
 
-        results['risk_score'] = min(risk_score, 100)
+        results['risk_score'] = min(score, 100)
+        results['status'] = "Safe" if results['risk_score'] < 40 else "malicious"
 
-        # Save to database
+        # Save to DB if user is logged in
         if current_user.is_authenticated:
-            scan_record = ScanResult(
-            user_id=current_user.id,
-            url=normalized_url,
-            result_json=json.dumps(results),
-            risk_score=results['risk_score'],
-            status="Safe" if results['risk_score'] < 40 else "malicious"
+            scan = ScanResult(
+                user_id=current_user.id,
+                url=normalized_url,
+                risk_score=results['risk_score'],
+                status=results['status'],
+                result_json=json.dumps(results)
             )
-            db.session.add(scan_record)
+            db.session.add(scan)
             db.session.commit()
 
-
-        return jsonify({
-            **results,
-            "refresh_dashboard": True  # Flag for frontend
-        }), 200
+        notify("Scan Complete")
+        return jsonify({**results, "refresh_dashboard": True}), 200
 
     except Exception as e:
-        print(f"Error: {str(e)}")
-        traceback.print_exc()  # Log full traceback
+        traceback.print_exc()
+        socketio.emit('scan_progress', {'step': 'Error', 'detail': str(e)}, room=request.args.get('sid'))
         return jsonify({'error': 'An unexpected error occurred'}), 500

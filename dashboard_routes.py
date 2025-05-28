@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, Response, jsonify, request
 from flask_login import login_required, current_user
 from models import db,ScanResult
 from datetime import datetime, timedelta
@@ -53,3 +53,18 @@ def get_dashboard_data():
         "current_page": scans_paginated.page,
         "total_pages": scans_paginated.pages
     })
+
+@dashboard_bp.route('/export/report.csv')
+@login_required
+def export_report_csv():
+    scans = ScanResult.query.filter_by(user_id=current_user.id).all()
+    
+    csv_data = "URL,Status,Risk Score,Scanned At\n"
+    for scan in scans:
+        csv_data += f'"{scan.url}",{scan.status},{scan.risk_score},{scan.created_at.strftime("%Y-%m-%d %H:%M")}\n'
+    
+    return Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-disposition": "attachment; filename=scan_report.csv"}
+    )

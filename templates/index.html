@@ -10,16 +10,25 @@
         <h2 class="section-title">Scan URL</h2>
         <div class="scan-input-container">
             <div class="url-input-group">
-                <input type="url" id="scanInput" class="scan-input" 
-                       placeholder="Enter suspicious URL here..." required>
+                <input type="url" id="scanInput" class="scan-input"
+                    placeholder="Enter suspicious URL here..." required>
                 <button class="scan-button" id="scanButton">
                     <span class="button-text">Scan Now</span>
-                    🔍
+                    <span class="button-icon">🔍</span>
+                    <span class="spinner hidden">
+                        <svg viewBox="0 0 50 50" class="spinner-svg">
+                            <circle cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+                        </svg>
+                    </span>
                 </button>
             </div>
-            
         </div>
     </section>
+
+    <div class="progress-container hidden" id="progressContainer">
+        <div class="progress-bar" id="progressBar"></div>
+        <span class="progress-text" id="progressText">0%</span>
+    </div>
 
     <!-- Risk Assessment Section -->
     <section class="risk-assessment hidden" id="riskAssessment">
@@ -154,8 +163,8 @@
     </section>-->
 </main>
     {% block page_js %}
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script type="module" src="{{ url_for('static', filename='js/home.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     {% endblock %}
 {% endblock %}

@@ -87,7 +87,11 @@ document.addEventListener("DOMContentLoaded", () => {
       paginationContainer.appendChild(nextButton);
     }
   }; // End of updateDashboard
-
+  
+  document.getElementById('downloadReportButton')?.addEventListener('click', () => {
+    window.location.href = '/dashboard/export/report.csv';
+  });
+  
   // Initial load
   fetch("/dashboard/data")
     .then(response => {
