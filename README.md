@@ -1,71 +1,191 @@
-# 🛡️ PhishVault
+# 🛡️ **PhishVault**
 
-**PhishVault** is a phishing detection web app that analyzes URLs to detect malicious or suspicious behavior using multiple techniques including:
+## 📌 Overview
 
-- SSL Certificate validation
-- Domain age analysis
-- Keyword inspection
-- Redirect chain checks
-- Threat intelligence from Google Safe Browsing and PhishTank
-- IP reputation via AbuseIPDB
-- DNS record inspection
+**PhishVault** is a phishing detection and URL analysis platform built using Flask. It helps users detect and assess potentially malicious websites by performing various security checks including SSL verification, domain age analysis, keyword scans, redirect tracing, and threat intelligence lookups (e.g., Google Safe Browsing, PhishTank, AbuseIPDB).
 
-## 🚀 Features
+---
 
-- 🔐 Login/logout system with Flask-Login
-- 📬 Forgot password flow (Mailtrap + Flask-Mail)
-- 🌐 URL scanning through a multi-step phishing detection pipeline
-- 📊 Dashboard for users to track scans
-- 🧠 Community reports placeholder for future crowdsourced data
-
-## 🧰 Built With
-
-- Python + Flask
-- SQLite
-- Flask-Login, Flask-Mail
-- Requests, Whois, DNSPython
-- Google Safe Browsing API, PhishTank (manual JSON), AbuseIPDB
-
-## 📁 Project Structure
+## 📂 Project Structure
 
 ```
 PhishVault/
 │
-├── templates/              # HTML templates
-├── static/                 # CSS, JS, images
-├── models.py               # SQLAlchemy models
-├── auth_routes.py          # Auth logic (login, signup, forgot password)
-├── phishing_routes.py      # URL scanning routes and logic
-├── dashboard_routes.py     # Dashboard logic
-├── app.py                  # App setup and blueprint registration
-├── .env                    # Environment variables (not committed)
-└── phishtank_data.json     # Manually downloaded threat data
+├── app.py                   # Main application file
+├── models.py                # SQLAlchemy database models
+├── auth_routes.py           # Authentication logic
+├── phishing_routes.py       # URL scanning and analysis
+├── dashboard_routes.py      # User dashboard functionality
+├── admin_routes.py          # Admin panel logic
+├── csrf_protection.py       # CSRF protection utility
+├── extensions.py            # Socket.IO setup
+├── static/                  # Static assets (CSS, JS, icons)
+├── templates/               # Jinja2 templates
+├── requirements.txt         # Python dependencies
+└── README.md                # Project readme
 ```
 
-## 📦 Setup Instructions
+---
 
-1. **Clone the repo**
+## 🛠️ Setup & Installation
+
+1. **Clone the repository**
+
    ```bash
    git clone https://github.com/chinmay161/PhishVault.git
    cd PhishVault
    ```
 
-2. **Install dependencies**
+2. **Create a virtual environment**
+
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies**
+
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Create `.env` file** and add your Mailtrap, API keys, and secret key.
+4. **Configure environment variables**
+   Create a `.env` file with:
 
-4. **Run the app**
-   ```bash
-   flask run
+   ```
+   FLASK_SECRET_KEY=your_secret_key
+   DATABASE_URL=sqlite:///phishvault.db
+   MAIL_SERVER=smtp.mailtrap.io
+   MAIL_PORT=2525
+   MAIL_USERNAME=your_mailtrap_username
+   MAIL_PASSWORD=your_mailtrap_password
+   MAIL_DEFAULT_SENDER=noreply@phishvault.com
+   GOOGLE_SAFE_BROWSING_API_KEY=your_google_api_key
+   ABUSEIPDB_API_KEY=your_abuseipdb_key
    ```
 
-## 📧 Contact
+5. **Run the application**
 
-Feel free to reach out via [GitHub Issues](https://github.com/chinmay161/PhishVault/issues) or fork the project if you'd like to contribute!
+   ```bash
+   python app.py
+   ```
 
 ---
 
-**Status:** 🎓 College Project | 🛠️ Still in development
+## 🔐 Authentication Flow
+
+* **Signup**: Creates a new user account and sends a verification email.
+* **Login**: Authenticates user after email verification.
+* **Forgot Password**: Sends a reset link with a secure token.
+* **Reset Password**: Resets user password after token validation.
+
+**Token models:**
+
+* `Token`: For email verification.
+* `PasswordResetToken`: For password resets.
+
+---
+
+## 🌐 URL Scanning Features
+
+Each scan includes:
+
+1. **SSL Certificate Check**
+2. **Domain Age Analysis**
+3. **Suspicious Keywords**
+4. **Redirect Chain Analysis**
+5. **Threat Database Lookup** (Google Safe Browsing, PhishTank)
+6. **IP Reputation** (AbuseIPDB)
+7. **DNS Record Details**
+
+**Risk Score Calculation**: Weighted based on severity of detected issues.
+
+---
+
+## 📊 Dashboard
+
+### For Users:
+
+* View total scans, safe/malicious stats.
+* Paginated recent scan history.
+* Export scan report as CSV.
+* Visual risk trends over the last 6 months.
+
+### For Admins:
+
+* View total users, scans, malicious counts.
+* Manage social/partner links.
+* Edit policy documents (TOS, Privacy).
+* View and export user data.
+* Enable/disable link visibility.
+
+---
+
+## 🧩 Models Summary
+
+### `User`
+
+* Fields: `email`, `password_hash`, `role`, `is_active`, etc.
+* Relations: tokens, password reset tokens, scan results.
+
+### `ScanResult`
+
+* Stores result data for each URL scan.
+
+### `Token` / `PasswordResetToken`
+
+* Handles verification and reset logic.
+
+### `Link`
+
+* Stores social and partner links for frontend.
+
+### `PolicyDocument`
+
+* Editable legal documents via the admin panel.
+
+---
+
+## 🔧 Admin Panel
+
+Accessible at `/admin/dashboard` for users with `role='admin'`.
+
+Features:
+
+* User management with CSV export
+* Toggle/delete links
+* Policy editor with CKEditor integration
+* Stats charts for scan insights
+
+---
+
+## 🔒 Security Features
+
+* CSRF protection via `@csrf_protect` decorator
+* Session protection: Secure, HttpOnly cookies
+* Token-based email verification
+* Rate-limiting and error handling (WIP recommended)
+
+---
+
+## 📤 Export & Reporting
+
+* **CSV Reports**:
+
+  * Scan history for users (`/dashboard/export/report.csv`)
+  * All users for admins (`/admin/export/users.csv`)
+
+---
+
+## 📡 WebSocket Integration
+
+* Real-time scan progress updates via Flask-SocketIO.
+* Emits `scan_progress` events to frontend for UX feedback.
+
+---
+
+## 📄 License & Contribution
+
+This is a college-level project and open for educational collaboration. You can raise issues or PRs via GitHub.
+
+---
