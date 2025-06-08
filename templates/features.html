@@ -4,56 +4,219 @@
 {% endblock %}
 
 {% block content %}
-<body>
-    <h1>PhishVault Features</h1>
+<!-- Hero Section -->
+    <section class="features-hero">
+        <div class="hero-content">
+            <h1 class="hero-title">PhishVault Features</h1>
+            <p class="hero-subtitle">Comprehensive protection powered by advanced AI and real-time threat intelligence</p>
+        </div>
+    </section>
 
-  <div class="section">
-    <h2>Risk Score</h2>
-    <div class="score-box">
-      The Risk Score ranges from <strong>0 to 100</strong>, summarizing how dangerous a URL is:
-      <ul>
-        <li><span class="risk-level green">0–30: Likely Safe</span></li>
-        <li><span class="risk-level yellow">31–70: Suspicious</span></li>
-        <li><span class="risk-level red">71–100: High Risk / Confirmed Phishing</span></li>
-      </ul>
-      Calculated from the combination of threat database checks, detection indicators, and technical signals.
-    </div>
-  </div>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Risk Score Section -->
+        <section class="risk-score-section">
+            <div class="section-header">
+                <h2 class="section-title">Risk Score System</h2>
+                <p class="section-subtitle">Our intelligent scoring system provides instant threat assessment from 0-100, helping you make informed security decisions</p>
+            </div>
+            
+            <div class="risk-score-container">
+                <p style="margin-bottom: 2rem; font-size: 1.1rem; text-align: center;">
+                    The Risk Score combines threat database checks, detection indicators, and technical signals to provide a comprehensive safety assessment.
+                </p>
+                
+                <div class="risk-levels">
+                    <div class="risk-level-card safe">
+                        <div class="risk-score safe">0–30</div>
+                        <div class="risk-label" style="color: var(--success-color);">Likely Safe</div>
+                        <p class="risk-description">Low risk URLs that passed all security checks and show no suspicious indicators.</p>
+                    </div>
+                    
+                    <div class="risk-level-card suspicious">
+                        <div class="risk-score suspicious">31–70</div>
+                        <div class="risk-label" style="color: var(--warning-color);">Suspicious</div>
+                        <p class="risk-description">Moderate risk URLs with some concerning patterns that require caution.</p>
+                    </div>
+                    
+                    <div class="risk-level-card dangerous">
+                        <div class="risk-score dangerous">71–100</div>
+                        <div class="risk-label" style="color: var(--risk-color);">High Risk</div>
+                        <p class="risk-description">Dangerous URLs confirmed as phishing or containing malicious content.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-  <div class="section">
-    <h2>Detection Indicators</h2>
-    <p>These are patterns in the URL or domain that are commonly associated with phishing attempts:</p>
-    <table>
-      <tr><th>Indicator</th><th>Explanation</th></tr>
-      <tr><td>IP Address in URL</td><td>Instead of a domain, raw IPs are used, often malicious.</td></tr>
-      <tr><td>URL Encoding</td><td>Encoded characters (%2F, %3D) used to obfuscate the destination.</td></tr>
-      <tr><td>Too Many Subdomains</td><td>Tries to mimic legit domains (e.g. secure-login.paypal.com.fake.com).</td></tr>
-      <tr><td>Mismatch Domain</td><td>Brand name in domain doesn't match actual host.</td></tr>
-    </table>
-  </div>
+        <!-- Features Grid -->
+        <section class="features-section">
+            <div class="section-header">
+                <h2 class="section-title">Advanced Detection Methods</h2>
+                <p class="section-subtitle">Multi-layered security analysis using cutting-edge technology and threat intelligence</p>
+            </div>
+            
+            <div class="features-grid">
+                <!-- Detection Indicators -->
+                <div class="feature-category">
+                    <div class="category-header">
+                        <div class="category-icon">🔍</div>
+                        <h3 class="category-title">Detection Indicators</h3>
+                    </div>
+                    <p class="category-description">
+                        Sophisticated pattern recognition that identifies common phishing techniques and suspicious URL structures.
+                    </p>
+                    <table class="feature-table">
+                        <thead>
+                            <tr>
+                                <th>Indicator</th>
+                                <th>Explanation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="feature-name">IP Address in URL</td>
+                                <td class="feature-explanation">Detects raw IP addresses instead of domains, often used to bypass security filters.</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">URL Encoding</td>
+                                <td class="feature-explanation">Identifies encoded characters (%2F, %3D) used to obfuscate malicious destinations.</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">Subdomain Abuse</td>
+                                <td class="feature-explanation">Flags excessive subdomains that mimic legitimate sites (e.g., secure.paypal.evil.com).</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">Domain Mismatch</td>
+                                <td class="feature-explanation">Identifies when brand names in URLs don't match the actual hosting domain.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-  <div class="section">
-    <h2>Threat Database Checks</h2>
-    <p>These checks compare the URL against well-known phishing and malware databases:</p>
-    <table>
-      <tr><th>Database</th><th>Description</th></tr>
-      <tr><td>Google Safe Browsing</td><td>Google's blacklist of known phishing and malware sites.</td></tr>
-      <tr><td>PhishTank</td><td>Community-sourced and verified phishing URLs.</td></tr>
-    </table>
-  </div>
+                <!-- Threat Database Checks -->
+                <div class="feature-category">
+                    <div class="category-header">
+                        <div class="category-icon">🗄️</div>
+                        <h3 class="category-title">Threat Database Checks</h3>
+                    </div>
+                    <p class="category-description">
+                        Real-time verification against multiple authoritative threat intelligence sources and blacklists.
+                    </p>
+                    <table class="feature-table">
+                        <thead>
+                            <tr>
+                                <th>Database</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="feature-name">Google Safe Browsing</td>
+                                <td class="feature-explanation">Google's comprehensive blacklist of known phishing, malware, and unwanted software sites.</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">PhishTank</td>
+                                <td class="feature-explanation">Community-sourced database of verified phishing URLs updated in real-time.</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">Custom Intelligence</td>
+                                <td class="feature-explanation">Proprietary threat feeds and machine learning models trained on recent attack patterns.</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">Domain Reputation</td>
+                                <td class="feature-explanation">Analysis of domain age, registration patterns, and historical security incidents.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-  <div class="section">
-    <h2>Technical Analysis</h2>
-    <p>Inspects the web page content to detect suspicious behavior or scripts:</p>
-    <table>
-      <tr><th>Feature</th><th>Risk Explanation</th></tr>
-      <tr><td>iFrames</td><td>Can be used to silently load phishing content from other domains.</td></tr>
-      <tr><td>Obfuscated JavaScript</td><td>Common in phishing pages to hide malicious actions.</td></tr>
-      <tr><td>External Form Action</td><td>Forms submitting credentials to unknown domains.</td></tr>
-      <tr><td>Fake SSL Icons</td><td>Misleads users into thinking the page is secure.</td></tr>
-    </table>
-  </div>
-</body>
+                <!-- Technical Analysis -->
+                <div class="feature-category">
+                    <div class="category-header">
+                        <div class="category-icon">⚙️</div>
+                        <h3 class="category-title">Technical Analysis</h3>
+                    </div>
+                    <p class="category-description">
+                        Deep content inspection and behavioral analysis to detect sophisticated phishing techniques.
+                    </p>
+                    <table class="feature-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Risk Explanation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="feature-name">Hidden iFrames</td>
+                                <td class="feature-explanation">Detects invisible frames that silently load malicious content from external domains.</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">Obfuscated JavaScript</td>
+                                <td class="feature-explanation">Identifies minified or encoded scripts commonly used to hide malicious behavior.</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">External Form Actions</td>
+                                <td class="feature-explanation">Flags forms that submit credentials to domains different from the hosting site.</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">Fake Security Icons</td>
+                                <td class="feature-explanation">Detects misleading SSL indicators and security badges designed to appear legitimate.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Advanced Features -->
+                <div class="feature-category">
+                    <div class="category-header">
+                        <div class="category-icon">🧠</div>
+                        <h3 class="category-title">AI-Powered Analysis</h3>
+                    </div>
+                    <p class="category-description">
+                        Machine learning algorithms that adapt to new threats and provide intelligent risk assessment.
+                    </p>
+                    <table class="feature-table">
+                        <thead>
+                            <tr>
+                                <th>Capability</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="feature-name">Behavioral Modeling</td>
+                                <td class="feature-explanation">Analyzes user interaction patterns and site behavior to detect social engineering attempts.</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">Visual Similarity</td>
+                                <td class="feature-explanation">Computer vision analysis to detect sites visually impersonating legitimate brands.</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">Real-time Learning</td>
+                                <td class="feature-explanation">Continuously updated models that learn from new phishing campaigns and attack vectors.</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">Predictive Scoring</td>
+                                <td class="feature-explanation">Advanced algorithms that predict threat likelihood based on multiple risk factors.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to Protect Yourself?</h2>
+                <p class="cta-description">Join thousands of users who trust PhishVault to keep them safe from phishing attacks</p>
+                <div class="cta-buttons">
+                    <a href="{{ url_for('auth.signup') }}" class="cta-button cta-primary">Start Free Trial</a>
+                    <a href="/dashboard" class="cta-button cta-secondary">Try Scanner Now</a>
+                </div>
+            </div>
+        </section>
     {% block page_js %}
         <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
     {% endblock %}

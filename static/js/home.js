@@ -1,19 +1,55 @@
 document.addEventListener('DOMContentLoaded', () => {
     const scanButton = document.getElementById('scanButton');
     const progressContainer = document.getElementById('progressContainer');
-    const progressBar = document.getElementById('progressBar');
-    const progressText = document.getElementById('progressText');
+
     const socket = io();
+
+    // Track current progress
+    let currentProgress = 0;
+    let progressInterval;
 
     // Handle socket connection
     socket.on('connect', () => {
         console.log('Connected via WebSocket:', socket.id);
     });
 
+    // Step-to-percentage mapping
+    const stepProgress = {
+        "Validating URL": 5,
+        "Checking SSL Certificate": 15,
+        "Checking Domain Age": 25,
+        "Checking for Suspicious Keywords": 35,
+        "Checking Redirects": 45,
+        "Checking Threat Databases": 60,
+        "Checking IP Reputation": 75,
+        "Checking DNS Records": 85,
+        "Calculating Risk Score": 95,
+        "Scan Complete": 100
+    };
+
     // Receive real-time scan progress from server
     socket.on('scan_progress', data => {
+        console.log(`Progress update: ${data.step} (${data.detail})`);
+        const newProgress = stepProgress[data.step] || currentProgress;
+        clearInterval(progressInterval);
+
+        // Force show progress bar
+        progressContainer.classList.remove('hidden');
+        progressContainer.classList.add('visible');
+
         updateProgressText(`${data.step} - ${data.detail}`);
+        updateProgressBar(newProgress);
+
+        progressInterval = setInterval(() => {
+            if (currentProgress < newProgress) {
+                currentProgress += 1;
+                updateProgressBar(currentProgress);
+            } else {
+                clearInterval(progressInterval);
+            }
+        }, 30);
     });
+
 
     scanButton.addEventListener('click', async () => {
         const rawUrl = document.getElementById('scanInput').value.trim();
@@ -23,28 +59,36 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        let scanUrl;
         try {
-            new URL(rawUrl); // validate URL
+            let fixedUrl = rawUrl;
+            if (!/^https?:\/\//i.test(fixedUrl)) {
+                fixedUrl = 'http://' + fixedUrl;
+            }
+            new URL(fixedUrl); // Validate
+            scanUrl = fixedUrl;
         } catch (error) {
-            alert('Please enter a valid URL format.');
+            alert('Invalid URL format.');
             return;
         }
+
+
+        // Reset progress UI
+        currentProgress = 0;
+        updateProgressBar(0);
+        updateProgressText('Starting scan...');
+        progressContainer.classList.remove('hidden');
+        progressContainer.classList.add('visible');
 
         // UI: Start loading
         scanButton.classList.add('button-loading');
         scanButton.querySelector('.spinner').classList.remove('hidden');
         scanButton.disabled = true;
-        progressContainer.classList.remove('hidden');
-        progressContainer.classList.add('visible');
-        updateProgressBar(0);
-        updateProgressText('Starting scan...');
 
         try {
             const response = await fetch(`/scan-url?sid=${socket.id}`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url: rawUrl }),
             });
 
@@ -54,10 +98,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const result = await response.json();
+            updateProgressBar(100);
             updateProgressText('Scan complete.');
 
-            // Simulate 100% progress
-            updateProgressBar(100);
             setTimeout(() => {
                 progressContainer.classList.add('hidden');
                 progressContainer.classList.remove('visible');
@@ -129,7 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('.tech-value.abuse-confidence-score').textContent =
                 `${techDetails.abuse_confidence_score}%`;
 
-            // Update dashboard if function available
             if (window.refreshDashboard) {
                 window.refreshDashboard();
             }
@@ -145,14 +187,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function updateProgressBar(percent) {
-        progressBar.style.width = `${percent}%`;
-        progressText.textContent = `${Math.round(percent)}%`;
+        const progressBar = document.getElementById('progressBar');
+        if (progressBar) {
+            progressBar.style.width = `${percent}%`;
+        }
+        const progressPercentText = document.getElementById('progressPercentText');
+        if (progressPercentText) {
+            progressPercentText.textContent = `${Math.round(percent)}%`;
+        }
     }
 
     function updateProgressText(message) {
-        const container = document.getElementById('progressText');
-        if (container) container.textContent = message;
+        const el = document.getElementById('progressStepText');
+        if (el) {
+            el.textContent = message;
+            el.style.display = 'inline-block'; // force rendering
+        }
     }
+
+
 
     function updateRiskTexts(score) {
         const riskTitle = document.querySelector('.risk-title');

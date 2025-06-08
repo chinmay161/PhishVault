@@ -5,8 +5,61 @@
 {% block content %}
     <!-- Body Section -->
 <main class="container">
+    {% if not current_user.is_authenticated %}
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">Protect Yourself from Phishing</h1>
+                <p class="hero-subtitle">Advanced AI-powered detection to keep you safe from malicious URLs and phishing attacks</p>
+                <div class="hero-cta">
+                    <a href="#scanSection" class="cta-primary">Start Scanning</a>
+                    <a href="/features" class="cta-secondary">Learn More</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="section-header">
+                <h2 class="section-title">Why Choose PhishVault?</h2>
+                <p class="section-subtitle">Cutting-edge technology meets user-friendly design to provide comprehensive protection against phishing threats</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3 class="feature-title">Real-time Protection</h3>
+                    <p class="feature-description">Instant analysis of URLs with our advanced machine learning algorithms that detect phishing attempts in milliseconds.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3 class="feature-title">AI-Powered Detection</h3>
+                    <p class="feature-description">Sophisticated artificial intelligence that learns from millions of phishing patterns to provide accurate threat assessment.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3 class="feature-title">Deep Analysis</h3>
+                    <p class="feature-description">Comprehensive scanning including SSL certificates, domain age, redirect chains, and suspicious content patterns.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3 class="feature-title">Multi-Database Check</h3>
+                    <p class="feature-description">Cross-reference against multiple threat databases including PhishTank, Google Safe Browsing, and proprietary sources.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Detailed Reports</h3>
+                    <p class="feature-description">Get comprehensive technical reports with risk scores, indicators, and actionable security recommendations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Lightning Fast</h3>
+                    <p class="feature-description">Results in under 5 seconds with our optimized infrastructure and global content delivery network.</p>
+                </div>
+            </div>
+        </section>
+    {% endif %}   
+
     <!-- Scan Input Section -->
-    <section class="scan-section">
+    <section class="scan-section" id="scanSection">
         <h2 class="section-title">Scan URL</h2>
         <div class="scan-input-container">
             <div class="url-input-group">
@@ -27,8 +80,12 @@
 
     <div class="progress-container hidden" id="progressContainer">
         <div class="progress-bar" id="progressBar"></div>
-        <span class="progress-text" id="progressText">0%</span>
+        <div class="progress-info">
+            <span class="progress-step" id="progressStepText">Starting...</span>
+            <span class="progress-percent" id="progressPercentText">0%</span>
+        </div>
     </div>
+
 
     <!-- Risk Assessment Section -->
     <section class="risk-assessment hidden" id="riskAssessment">

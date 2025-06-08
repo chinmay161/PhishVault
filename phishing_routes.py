@@ -4,7 +4,7 @@ import requests
 import ssl, os
 import socket
 import whois
-from datetime import datetime
+from datetime import datetime, time
 import dns.resolver
 from dotenv import load_dotenv
 from models import db, ScanResult
@@ -12,6 +12,7 @@ from flask_login import current_user
 import traceback
 from flask_socketio import emit
 from extensions import socketio
+import time
 
 # Define the blueprint
 phishing_bp = Blueprint('phishing', __name__)
@@ -23,15 +24,23 @@ phishing_bp = Blueprint('phishing', __name__)
 def validate_and_normalize_url(raw_url):
     if not raw_url:
         return None, "URL is required"
-    
+
+    # Add scheme if missing
+    if not raw_url.startswith(('http://', 'https://')):
+        raw_url = 'http://' + raw_url
+
     parsed_url = urlparse(raw_url)
-    if not parsed_url.scheme:  # If no scheme (http/https) is provided
-        raw_url = f"http://{raw_url}"  # Default to http://
-    
-    parsed_url = urlparse(raw_url)
-    if not parsed_url.netloc:  # If the URL is still invalid
+    if not parsed_url.netloc:
         return None, "Invalid URL format"
-    
+
+    # Check if website exists (HEAD is faster)
+    try:
+        response = requests.head(raw_url, timeout=5, allow_redirects=True)
+        if response.status_code >= 400:
+            return None, "Website does not appear to exist or is unreachable"
+    except Exception as e:
+        return None, f"Website not reachable: {str(e)}"
+
     return parsed_url.geturl(), None
 
 # Step 1: SSL Certificate Validation
@@ -43,7 +52,7 @@ def check_ssl_certificate(parsed_url):
             cert = s.getpeercert()
         return {'valid': True, 'details': 'SSL certificate is valid.'}
     except Exception as e:
-        return {'valid': False, 'details': str(e)}
+        return {'valid': False, 'details': 'No valid SSL certificate found.'}
 
 # Step 2: Domain Age Analysis
 def check_domain_age(parsed_url):
@@ -62,7 +71,10 @@ def check_domain_age(parsed_url):
 def check_suspicious_keywords(url):
     suspicious_keywords = ['urgent-action', 'verify-account', 'login', 'password']
     detected_keywords = [kw for kw in suspicious_keywords if kw in url.lower()]
-    return {'detected': len(detected_keywords) > 0, 'keywords_found': detected_keywords}
+    return {
+        'detected': bool(detected_keywords),
+        'keywords_found': detected_keywords if detected_keywords else ['No suspicious keywords found']
+    }
 
 # Step 4: Redirect Chain Analysis
 def check_redirect_chain(url):
@@ -129,7 +141,6 @@ def check_ip_reputation(parsed_url):
     try:
         # Resolve the domain name to an IP address
         ip_address = socket.gethostbyname(parsed_url.netloc)
-        print(f"[DEBUG] Resolved IP for {parsed_url.netloc}: {ip_address}")  # Debug log
 
         # AbuseIPDB API key and endpoint
         abuseipdb_api_key = os.getenv('ABUSEIPDB_API_KEY')
@@ -138,14 +149,11 @@ def check_ip_reputation(parsed_url):
         # Headers and parameters for the API request
         headers = {'Key': abuseipdb_api_key, 'Accept': 'application/json'}
         params = {'ipAddress': ip_address, 'maxAgeInDays': '90'}
-        print(f"[DEBUG] Requesting AbuseIPDB with params: {params}")  # Debug log
         
         # Make the API request to AbuseIPDB
         response = requests.get(abuseipdb_url, headers=headers, params=params)
-        print(f"[DEBUG] AbuseIPDB HTTP Status: {response.status_code}")  # Debug log
 
         result = response.json()
-        print(f"[DEBUG] AbuseIPDB response: {result}")  # Debug log
 
         # Extract relevant details from AbuseIPDB response
         data = result['data']
@@ -178,7 +186,7 @@ def check_ip_reputation(parsed_url):
             'domain_name': 'Unknown',
             'country': 'Unknown',
             'city': 'Unknown',
-            'abuse_confidence_score': 0,
+            'abuse_confidence_score': None,
             'details': f"Error checking IP reputation: {str(e)}"
         }
         
@@ -205,6 +213,7 @@ def scan_url():
 
         def notify(step, detail=""):
             socketio.emit('scan_progress', {'step': step, 'detail': detail}, room=sid)
+            time.sleep(0.1)  # Small delay to allow UI updates
 
         # Validate URL
         notify("Validating URL")
@@ -219,41 +228,44 @@ def scan_url():
         # Step-by-step scan with WebSocket updates
         notify("Checking SSL Certificate")
         results['ssl_certificate'] = check_ssl_certificate(parsed_url)
-
+        
         notify("Checking Domain Age")
         results['domain_age'] = check_domain_age(parsed_url)
-
+        
         notify("Checking for Suspicious Keywords")
         results['keywords'] = check_suspicious_keywords(normalized_url)
-
+        
         notify("Checking Redirects")
         results['redirect_chain'] = check_redirect_chain(normalized_url)
-
+        
         notify("Checking Threat Databases")
         results['threat_databases'] = check_threat_databases(normalized_url)
-
+        
         notify("Checking IP Reputation")
         results['ip_reputation'] = check_ip_reputation(parsed_url)
-
+        
         notify("Checking DNS Records")
         results['technical_details'] = check_technical_details(parsed_url)
-
+        
         # Calculate risk score
         notify("Calculating Risk Score")
         score = 0
         if not results['ssl_certificate']['valid']:
-            score += 20
-        if results['domain_age']['age_days'] < 30:
-            score += 20
+            score += 15
+        if results['domain_age']['status'] == 'New':
+            score += 15
         if results['keywords']['detected']:
             score += 20
         if not results['redirect_chain']['clean']:
-            score += 20
+            score += 10
         if any(db['status'] == 'Reported' for db in results['threat_databases']):
             score += 20
-        if results['ip_reputation']['abuse_confidence_score'] > 50:
+        abuse_score = results['ip_reputation']['abuse_confidence_score']
+        if abuse_score is not None and abuse_score >= 50:
             score += 20
-
+        elif abuse_score is None:
+            score += 5  # Penalize uncertainty
+        
         results['risk_score'] = min(score, 100)
         results['status'] = "Safe" if results['risk_score'] < 40 else "malicious"
 
