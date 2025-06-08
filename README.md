@@ -146,16 +146,39 @@ Each scan includes:
 
 ---
 
-## 🔧 Admin Panel
+## 🔧 **Admin Panel**
 
-Accessible at `/admin/dashboard` for users with `role='admin'`.
+**URL:** `/admin/dashboard`
+**Access:** Only for users with `role='admin'`
 
-Features:
+### 📊 Features of the Admin Panel:
 
-* User management with CSV export
-* Toggle/delete links
-* Policy editor with CKEditor integration
-* Stats charts for scan insights
+* **Dashboard Overview**
+
+  * Total users
+  * Total scans
+  * Malicious scan count
+  * Basic charts for visual summary
+
+* **User Management**
+
+  * View all registered users
+  * Export user list as CSV
+
+* **Policy Editor**
+
+  * Edit and update Terms of Service and Privacy Policy
+  * Changes are reflected in `/terms` and `/privacy`
+
+* **Link Management**
+
+  * Add/edit/delete social and partner links
+  * Toggle visibility of each link
+
+* **Chart Data API**
+
+  * Endpoint: `/admin/chart-data`
+  * Used by frontend to populate admin charts
 
 ---
 
